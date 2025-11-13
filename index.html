@@ -17,14 +17,19 @@
       background: #121212;
       color: white;
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       padding-bottom: env(safe-area-inset-bottom);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
     }
     
     .container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
       width: 100%;
       padding: 20px;
@@ -32,6 +37,8 @@
       flex-direction: column;
       flex: 1;
       overflow: hidden;
+      min-height: 0;
+      height: 100%;
     }
     
     .auth-screen {
@@ -39,9 +46,11 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: 100%;
+      min-height: 0;
       text-align: center;
       padding: 20px;
+      overflow-y: auto;
     }
     
     .logo {
@@ -49,7 +58,9 @@
       margin-bottom: 20px;
       background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
+      color: transparent;
     }
     
     .form-group {
@@ -66,6 +77,12 @@
       background: #2d2d2d;
       color: white;
       font-size: 16px;
+      outline: none;
+      transition: background 0.3s;
+    }
+    
+    input:focus {
+      background: #353535;
     }
     
     input::placeholder {
@@ -106,6 +123,15 @@
       width: 80%;
     }
     
+    .delete-account-btn {
+      background: #ff4444 !important;
+    }
+    
+    .delete-account-btn:hover {
+      background: #ff3333 !important;
+      transform: scale(1.03);
+    }
+    
     .btn-switch {
       background: transparent;
       border: none;
@@ -119,18 +145,23 @@
     .chat-container {
       display: none;
       flex: 1;
-      height: calc(100vh - 40px);
+      height: 100%;
       overflow: hidden;
+      flex-direction: row;
+      gap: 15px;
+      min-height: 0;
     }
     
     .sidebar {
       width: 280px;
+      min-width: 280px;
       background: #1e1e1e;
       border-radius: 20px;
       padding: 15px;
       display: flex;
       flex-direction: column;
       height: 100%;
+      overflow: hidden;
     }
     
     .user-info {
@@ -139,6 +170,7 @@
       padding: 15px;
       border-bottom: 1px solid #333;
       margin-bottom: 15px;
+      flex-shrink: 0;
     }
     
     .avatar {
@@ -159,12 +191,14 @@
       overflow-y: auto;
       padding-right: 5px;
       margin-bottom: 15px;
+      min-height: 0;
     }
     
     .tabs {
       display: flex;
       margin-bottom: 15px;
       border-bottom: 1px solid #333;
+      flex-shrink: 0;
     }
     
     .tab {
@@ -187,18 +221,21 @@
       flex: 1;
       overflow-y: auto;
       display: none;
+      min-height: 0;
     }
     
     .tab-content.active {
-      display: block;
-      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
     
     .contacts, .online-users {
-      height: 100%;
+      flex: 1;
       overflow-y: auto;
       margin-top: 5px;
       padding-right: 5px;
+      min-height: 0;
     }
     
     .contact, .user-item {
@@ -234,22 +271,35 @@
       margin-top: 3px;
     }
     
+    .status {
+      font-size: 12px;
+      color: #4caf50;
+      margin-top: 3px;
+    }
+    
+    .username {
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
     .action-buttons {
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding-top: 10px;
       border-top: 1px solid #333;
+      flex-shrink: 0;
     }
     
     .main-chat {
       flex: 1;
+      min-width: 0;
       background: #1e1e1e;
       border-radius: 20px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      margin-left: 15px;
+      height: 100%;
     }
     
     .chat-header {
@@ -260,6 +310,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
     
     .messages {
@@ -269,7 +320,7 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
-      padding-bottom: 80px;
+      min-height: 0;
     }
     
     .message {
@@ -279,6 +330,8 @@
       position: relative;
       line-height: 1.4;
       animation: fadeIn 0.3s ease;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
     
     @keyframes fadeIn {
@@ -305,38 +358,42 @@
     
     .message-time {
       font-size: 11px;
-      color: #aaa;
+      color: rgba(255, 255, 255, 0.6);
       margin-top: 5px;
       text-align: right;
     }
     
+    .message.received .message-time {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
     .message-input-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 10px 20px;
+      padding: 15px 20px;
       background: #1e1e1e;
       border-top: 1px solid #333;
-      z-index: 100;
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-      box-sizing: border-box;
+      flex-shrink: 0;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
     }
     
     .message-input {
       display: flex;
       gap: 10px;
-      max-width: 800px;
-      margin: 0 auto;
       width: 100%;
+      max-width: 100%;
     }
     
     .message-input input {
       flex: 1;
       padding: 12px 15px;
       background: #2d2d2d;
+      border-radius: 25px;
+    }
+    
+    .message-input .btn {
+      flex-shrink: 0;
+      padding: 12px 20px;
+      white-space: nowrap;
     }
     
     .hidden {
@@ -368,50 +425,114 @@
     }
     
     @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+        height: 100%;
+      }
+      
       .chat-container {
         flex-direction: column;
+        gap: 10px;
+        height: 100%;
+        min-height: 0;
       }
       
       .sidebar {
         width: 100%;
+        min-width: 100%;
+        max-width: 100%;
         height: auto;
-        margin-bottom: 15px;
-        max-height: 40vh;
+        max-height: 45vh;
+        flex-shrink: 0;
+        overflow: hidden;
       }
       
       .main-chat {
-        margin-left: 0;
         flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
       }
       
       .message-input-container {
         padding: 10px;
+        flex-shrink: 0;
+      }
+      
+      .message-input {
+        gap: 8px;
+      }
+      
+      .message-input input {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      
+      .message-input .btn {
+        padding: 10px 16px;
+        font-size: 14px;
+        min-width: auto;
       }
       
       .contact-name {
         font-size: 14px;
       }
+      
+      .messages {
+        padding: 15px 10px;
+        min-height: 0;
+      }
+      
+      .chat-header {
+        padding: 12px 15px;
+        font-size: 16px;
+      }
     }
     
     @media (max-height: 700px) {
       .auth-screen {
-        height: auto;
-        padding: 40px 20px;
-        margin-top: 20px;
+        height: 100%;
+        padding: 20px;
+        justify-content: flex-start;
+        padding-top: 40px;
       }
       
       .logo {
-        font-size: 2.5rem;
+        font-size: 2rem;
         margin-bottom: 15px;
+      }
+      
+      .form-group {
+        margin: 10px 0;
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        margin: 5px;
+      }
+    }
+    
+    @media (max-width: 768px) and (max-height: 600px) {
+      .sidebar {
+        max-height: 35vh;
+      }
+      
+      .messages {
+        padding: 10px 8px;
       }
     }
     
     @media (max-width: 480px) {
+      .container {
+        padding: 8px;
+      }
+      
       .sidebar {
         width: 100%;
-        max-height: 35vh;
-        margin-bottom: 10px;
+        max-height: 40vh;
         border-radius: 15px;
+        padding: 12px;
       }
       
       .main-chat {
@@ -420,26 +541,41 @@
       
       .message {
         max-width: 85%;
+        padding: 10px 12px;
+        font-size: 14px;
       }
       
       .user-info {
         padding: 10px;
+        margin-bottom: 10px;
       }
       
       .avatar {
         width: 32px;
         height: 32px;
-        font-size: 16px;
+        font-size: 14px;
+      }
+      
+      .username {
+        font-size: 13px;
+      }
+      
+      .status {
+        font-size: 11px;
       }
       
       .chat-header {
-        padding: 10px 15px;
-        font-size: 16px;
+        padding: 10px 12px;
+        font-size: 15px;
       }
       
       .messages {
-        padding: 15px;
-        padding-bottom: 70px;
+        padding: 12px 8px;
+        gap: 12px;
+      }
+      
+      .message-input-container {
+        padding: 8px;
       }
       
       .message-input input {
@@ -447,10 +583,68 @@
         font-size: 14px;
       }
       
+      .message-input .btn {
+        padding: 10px 14px;
+        font-size: 13px;
+        min-width: auto;
+      }
+      
       .btn {
-        padding: 10px 20px;
+        padding: 10px 16px;
         font-size: 14px;
-        min-width: 120px;
+        min-width: 100px;
+        margin: 5px;
+      }
+      
+      .action-buttons {
+        gap: 6px;
+        padding-top: 8px;
+      }
+      
+      .action-buttons .btn {
+        width: 100%;
+        margin: 0;
+      }
+      
+      .tabs {
+        margin-bottom: 10px;
+      }
+      
+      .tab {
+        padding: 8px 5px;
+        font-size: 13px;
+      }
+      
+      .contact, .user-item {
+        padding: 10px 12px;
+        margin-bottom: 6px;
+      }
+      
+      .contact-name {
+        font-size: 13px;
+      }
+      
+      .contact-last-msg {
+        font-size: 11px;
+      }
+      
+      .user-status {
+        font-size: 11px;
+      }
+      
+      .logo {
+        font-size: 2rem;
+        margin-bottom: 15px;
+      }
+      
+      .form-group {
+        margin: 12px 0;
+        max-width: 100%;
+      }
+      
+      input {
+        padding: 10px 12px;
+        font-size: 15px;
       }
     }
   </style>
@@ -468,7 +662,7 @@
       </div>
       <button class="btn" id="loginBtn">Войти</button>
       <button class="btn" id="registerBtn">Зарегистрироваться</button>
-      <button class="btn btn-delete" id="deleteAccountBtn">Удалить аккаунт</button>
+      <button class="btn btn-delete" id="deleteAccountBtnAuth">Удалить аккаунт</button>
     </div>
 
     <!-- Экран чата -->
@@ -503,7 +697,7 @@
         
         <div class="action-buttons">
           <button class="btn logout-btn" id="logoutBtn">Выйти</button>
-          <button class="btn delete-account-btn" id="deleteAccountBtn">Удалить аккаунт</button>
+          <button class="btn btn-red delete-account-btn" id="deleteAccountBtnChat">Удалить аккаунт</button>
         </div>
       </div>
       
@@ -515,14 +709,13 @@
         <div class="messages" id="messagesContainer">
           <div class="no-messages">Выберите контакт для начала общения</div>
         </div>
+        <div class="message-input-container">
+          <div class="message-input">
+            <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
+            <button class="btn" id="sendBtn">Отправить</button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  
-  <div class="message-input-container">
-    <div class="message-input">
-      <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
-      <button class="btn" id="sendBtn">Отправить</button>
     </div>
   </div>
 
@@ -553,7 +746,8 @@
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const logoutBtn = document.getElementById('logoutBtn');
-    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deleteAccountBtnAuth = document.getElementById('deleteAccountBtnAuth');
+    const deleteAccountBtnChat = document.getElementById('deleteAccountBtnChat');
     const sendBtn = document.getElementById('sendBtn');
     const messageInput = document.getElementById('messageInput');
     const messagesContainer = document.getElementById('messagesContainer');
@@ -584,14 +778,12 @@
     function showAuthScreen() {
       authScreen.style.display = 'flex';
       chatContainer.style.display = 'none';
-      document.querySelector('.message-input-container').style.display = 'none';
     }
 
     // Показать экран чата
     function showChatScreen() {
       chatContainer.style.display = 'flex';
       authScreen.style.display = 'none';
-      document.querySelector('.message-input-container').style.display = 'block';
     }
 
     // Войти в систему
@@ -649,18 +841,34 @@
       if (!confirmDelete) return;
       
       try {
-        // Удалить все сообщения пользователя
-        const messagesQuery = query(
+        // Удалить все сообщения, где пользователь является отправителем или получателем
+        const messagesQuerySent = query(
           collection(db, 'messages'),
           where('sender', '==', currentUser.uid)
         );
         
-        const messagesSnapshot = await getDocs(messagesQuery);
+        const messagesQueryReceived = query(
+          collection(db, 'messages'),
+          where('receiver', '==', currentUser.uid)
+        );
+        
+        const [sentSnapshot, receivedSnapshot] = await Promise.all([
+          getDocs(messagesQuerySent),
+          getDocs(messagesQueryReceived)
+        ]);
+        
         const deletePromises = [];
         
-        messagesSnapshot.forEach(doc => {
+        sentSnapshot.forEach(doc => {
           deletePromises.push(deleteDoc(doc.ref));
         });
+        
+        receivedSnapshot.forEach(doc => {
+          deletePromises.push(deleteDoc(doc.ref));
+        });
+        
+        // Дождаться удаления всех сообщений
+        await Promise.all(deletePromises);
         
         // Удалить пользователя из коллекции users
         const userQuery = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
@@ -673,6 +881,10 @@
         
         // Удалить аккаунт аутентификации
         await deleteUser(currentUser);
+        
+        // Очистить сохраненный чат
+        localStorage.removeItem('currentChatUserId');
+        localStorage.removeItem('currentChatUserName');
         
         alert('Ваш аккаунт успешно удален');
         showAuthScreen();
@@ -698,6 +910,10 @@
             });
           }
         }
+        
+        // Очистить сохраненный чат
+        localStorage.removeItem('currentChatUserId');
+        localStorage.removeItem('currentChatUserName');
         
         await signOut(auth);
         showAuthScreen();
@@ -758,7 +974,7 @@
             ${user.online ? `<div class="user-status">в сети</div>` : ''}
           `;
           contactEl.dataset.uid = user.uid;
-          contactEl.addEventListener('click', () => openChat(user));
+          contactEl.addEventListener('click', (e) => openChat(user, e.currentTarget));
           contactsList.appendChild(contactEl);
         });
       });
@@ -791,24 +1007,69 @@
             <div class="user-status">в сети</div>
           `;
           userEl.dataset.uid = user.uid;
-          userEl.addEventListener('click', () => openChat(user));
+          userEl.addEventListener('click', (e) => openChat(user, e.currentTarget));
           onlineUsersList.appendChild(userEl);
         });
       });
     }
 
     // Открыть чат с пользователем
-    function openChat(user) {
+    function openChat(user, eventElement) {
       currentChatUser = user;
       chatHeader.querySelector('span:first-child').textContent = user.name;
       onlineStatus.textContent = user.online ? 'в сети' : 'не в сети';
       onlineStatus.style.color = user.online ? '#4caf50' : '#aaa';
       
+      // Сохранить текущий чат в localStorage
+      if (user && user.uid) {
+        localStorage.setItem('currentChatUserId', user.uid);
+        localStorage.setItem('currentChatUserName', user.name || '');
+      }
+      
       // Убрать активный класс у всех контактов
       document.querySelectorAll('.contact, .user-item').forEach(c => c.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      
+      // Добавить активный класс к выбранному контакту
+      if (eventElement) {
+        eventElement.classList.add('active');
+      }
       
       loadMessages();
+    }
+    
+    // Восстановить последний открытый чат
+    async function restoreLastChat() {
+      if (!currentUser) return;
+      
+      const savedChatUserId = localStorage.getItem('currentChatUserId');
+      if (!savedChatUserId) return;
+      
+      try {
+        // Найти пользователя по сохраненному UID
+        const q = query(collection(db, 'users'), where('uid', '==', savedChatUserId));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data();
+          const user = { uid: userData.uid, name: userData.name, online: userData.online || false };
+          
+          // Найти элемент контакта и открыть чат
+          const contactElement = document.querySelector(`[data-uid="${user.uid}"]`);
+          if (contactElement) {
+            openChat(user, contactElement);
+          } else {
+            // Если элемент еще не загружен, подождем немного и попробуем снова
+            setTimeout(() => {
+              const contactElement = document.querySelector(`[data-uid="${user.uid}"]`);
+              if (contactElement) {
+                openChat(user, contactElement);
+              }
+            }, 500);
+          }
+        }
+      } catch (error) {
+        console.error('Ошибка восстановления чата:', error);
+      }
     }
 
     // Загрузить сообщения
@@ -822,32 +1083,152 @@
       
       messagesContainer.innerHTML = '<div class="loading">Загрузка сообщений...</div>';
       
-      const q = query(
+      // Используем два отдельных запроса вместо одного с составным индексом
+      // Запрос 1: сообщения, где текущий пользователь - отправитель
+      const q1 = query(
         collection(db, 'messages'),
-        where('sender', 'in', [currentUser.uid, currentChatUser.uid]),
-        where('receiver', 'in', [currentUser.uid, currentChatUser.uid]),
+        where('sender', '==', currentUser.uid),
+        where('receiver', '==', currentChatUser.uid),
         orderBy('timestamp', 'asc')
       );
       
-      messagesObserver = onSnapshot(q, (snapshot) => {
-        messagesContainer.innerHTML = '';
+      // Запрос 2: сообщения, где текущий пользователь - получатель
+      const q2 = query(
+        collection(db, 'messages'),
+        where('sender', '==', currentChatUser.uid),
+        where('receiver', '==', currentUser.uid),
+        orderBy('timestamp', 'asc')
+      );
+      
+      // Используем Map для хранения всех сообщений по id (уникальность)
+      const messagesMap = new Map();
+      const displayedMessageIds = new Set(); // Отслеживаем уже отображенные сообщения
+      let hasReceivedData = false;
+      let isInitialRender = true;
+      
+      // Функция для обновления UI
+      const updateMessagesUI = (newMessagesOnly = false) => {
+        // Преобразуем Map в массив и сортируем по времени
+        const allMessages = Array.from(messagesMap.values()).sort((a, b) => {
+          const timeA = a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || new Date(0));
+          const timeB = b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || new Date(0));
+          return timeA - timeB;
+        });
         
-        if (snapshot.empty) {
-          messagesContainer.innerHTML = '<div class="no-messages">Нет сообщений. Напишите первое сообщение!</div>';
+        // Если еще не получили данные и список пуст, не обновляем UI
+        if (!hasReceivedData && allMessages.length === 0) {
           return;
         }
         
-        snapshot.forEach((doc) => {
-          const msg = doc.data();
-          addMessageToUI(msg, msg.sender === currentUser.uid);
+        hasReceivedData = true;
+        
+        // При первой загрузке или если не только новые сообщения - перерисовываем все
+        if (isInitialRender || !newMessagesOnly) {
+          messagesContainer.innerHTML = '';
+          displayedMessageIds.clear();
+          isInitialRender = false;
+          
+          if (allMessages.length === 0) {
+            messagesContainer.innerHTML = '<div class="no-messages">Нет сообщений. Напишите первое сообщение!</div>';
+            return;
+          }
+        }
+        
+        // Добавляем только новые сообщения
+        let hasNewMessages = false;
+        allMessages.forEach((msg) => {
+          if (!displayedMessageIds.has(msg.id)) {
+            addMessageToUI(msg, msg.sender === currentUser.uid);
+            displayedMessageIds.add(msg.id);
+            hasNewMessages = true;
+          }
         });
         
-        // Прокрутить вниз
-        scrollToBottom();
+        // Удаляем сообщения, которых больше нет в Map
+        const currentIds = new Set(allMessages.map(m => m.id));
+        displayedMessageIds.forEach((id) => {
+          if (!currentIds.has(id)) {
+            const element = messagesContainer.querySelector(`[data-message-id="${id}"]`);
+            if (element) {
+              element.remove();
+            }
+            displayedMessageIds.delete(id);
+          }
+        });
+        
+        // Прокрутить вниз только если есть новые сообщения
+        if (hasNewMessages) {
+          requestAnimationFrame(() => {
+            scrollToBottom();
+          });
+        }
+      };
+      
+      // Подписка на первый запрос
+      const unsubscribe1 = onSnapshot(q1, (snapshot) => {
+        let hasNewMessages = false;
+        const currentIds = new Set();
+        
+        snapshot.forEach((doc) => {
+          const data = { id: doc.id, ...doc.data() };
+          const wasNew = !messagesMap.has(doc.id);
+          messagesMap.set(doc.id, data);
+          currentIds.add(doc.id);
+          if (wasNew) {
+            hasNewMessages = true;
+          }
+        });
+        
+        // Удаляем сообщения из этого запроса, которых больше нет
+        messagesMap.forEach((msg, id) => {
+          if (msg.sender === currentUser.uid && msg.receiver === currentChatUser.uid && !currentIds.has(id)) {
+            messagesMap.delete(id);
+          }
+        });
+        
+        // Обновляем UI, передавая информацию о том, есть ли новые сообщения
+        updateMessagesUI(hasNewMessages && hasReceivedData);
       }, (error) => {
-        console.error('Ошибка загрузки сообщений:', error);
-        messagesContainer.innerHTML = `<div class="no-messages">Ошибка загрузки сообщений: ${error.message}</div>`;
+        console.error('Ошибка загрузки сообщений (запрос 1):', error);
+        hasReceivedData = true;
+        updateMessagesUI();
       });
+      
+      // Подписка на второй запрос
+      const unsubscribe2 = onSnapshot(q2, (snapshot) => {
+        let hasNewMessages = false;
+        const currentIds = new Set();
+        
+        snapshot.forEach((doc) => {
+          const data = { id: doc.id, ...doc.data() };
+          const wasNew = !messagesMap.has(doc.id);
+          messagesMap.set(doc.id, data);
+          currentIds.add(doc.id);
+          if (wasNew) {
+            hasNewMessages = true;
+          }
+        });
+        
+        // Удаляем сообщения из этого запроса, которых больше нет
+        messagesMap.forEach((msg, id) => {
+          if (msg.sender === currentChatUser.uid && msg.receiver === currentUser.uid && !currentIds.has(id)) {
+            messagesMap.delete(id);
+          }
+        });
+        
+        // Обновляем UI, передавая информацию о том, есть ли новые сообщения
+        updateMessagesUI(hasNewMessages && hasReceivedData);
+      }, (error) => {
+        console.error('Ошибка загрузки сообщений (запрос 2):', error);
+        hasReceivedData = true;
+        updateMessagesUI();
+      });
+      
+      // Сохраняем функцию отписки
+      messagesObserver = () => {
+        unsubscribe1();
+        unsubscribe2();
+      };
     }
 
     // Прокрутить вниз к последним сообщениям
@@ -857,8 +1238,15 @@
 
     // Добавить сообщение в интерфейс
     function addMessageToUI(message, isSent) {
+      // Проверяем, не существует ли уже это сообщение
+      const existingMessage = messagesContainer.querySelector(`[data-message-id="${message.id}"]`);
+      if (existingMessage) {
+        return; // Сообщение уже отображено
+      }
+      
       const messageEl = document.createElement('div');
       messageEl.className = `message ${isSent ? 'sent' : 'received'}`;
+      messageEl.setAttribute('data-message-id', message.id);
       
       let timeStr = '';
       if (message.timestamp) {
@@ -915,7 +1303,8 @@
     loginBtn.addEventListener('click', login);
     registerBtn.addEventListener('click', register);
     logoutBtn.addEventListener('click', logout);
-    deleteAccountBtn.addEventListener('click', deleteAccount);
+    deleteAccountBtnAuth.addEventListener('click', deleteAccount);
+    deleteAccountBtnChat.addEventListener('click', deleteAccount);
     sendBtn.addEventListener('click', sendMessage);
     
     messageInput.addEventListener('keypress', (e) => {
@@ -952,6 +1341,11 @@
           loadOnlineUsers();
           showChatScreen();
           
+          // Восстановить последний открытый чат после загрузки контактов
+          setTimeout(() => {
+            restoreLastChat();
+          }, 1000);
+          
           // Настроить автообновление статуса online
           setInterval(async () => {
             try {
@@ -982,6 +1376,11 @@
           loadContacts();
           loadOnlineUsers();
           showChatScreen();
+          
+          // Восстановить последний открытый чат после загрузки контактов
+          setTimeout(() => {
+            restoreLastChat();
+          }, 1000);
         }
       } else {
         showAuthScreen();
