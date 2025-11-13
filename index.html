@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>ChatLocal</title>
   <style>
     * {
@@ -19,6 +20,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom);
     }
     
     .container {
@@ -29,6 +31,7 @@
       display: flex;
       flex-direction: column;
       flex: 1;
+      overflow: hidden;
     }
     
     .auth-screen {
@@ -81,14 +84,26 @@
       margin: 10px;
       min-width: 150px;
       font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
     .btn:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     
     .btn-red {
       background: #ff5252;
+    }
+    
+    .btn-gray {
+      background: #555;
+    }
+    
+    .btn-delete {
+      background: #ff4444;
+      margin-top: 20px;
+      width: 80%;
     }
     
     .btn-switch {
@@ -104,7 +119,8 @@
     .chat-container {
       display: none;
       flex: 1;
-      height: calc(100vh - 20px);
+      height: calc(100vh - 40px);
+      overflow: hidden;
     }
     
     .sidebar {
@@ -114,6 +130,8 @@
       padding: 15px;
       display: flex;
       flex-direction: column;
+      height: 100%;
+      overflow: hidden;
     }
     
     .user-info {
@@ -134,31 +152,75 @@
       justify-content: center;
       font-weight: bold;
       margin-right: 10px;
+      flex-shrink: 0;
     }
     
     .logout-btn {
       background: #ff5252;
       padding: 8px 15px;
       border-radius: 20px;
-      margin-top: auto;
+      margin-top: 10px;
       width: 100%;
     }
     
-    .contacts {
+    .delete-account-btn {
+      background: #555;
+      padding: 8px 15px;
+      border-radius: 20px;
+      margin-top: 8px;
+      width: 100%;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #333;
+    }
+    
+    .tab {
+      padding: 10px 5px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      font-size: 14px;
+      transition: all 0.3s;
+      color: #aaa;
+    }
+    
+    .tab.active {
+      color: #4facfe;
+      border-bottom: 2px solid #4facfe;
+      font-weight: bold;
+    }
+    
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .contacts, .online-users {
       flex: 1;
       overflow-y: auto;
       margin-top: 10px;
+      padding-right: 5px;
     }
     
-    .contact {
+    .contact, .user-item {
       padding: 12px 15px;
       border-radius: 15px;
       margin-bottom: 8px;
       cursor: pointer;
       transition: background 0.3s;
+      display: flex;
+      flex-direction: column;
     }
     
-    .contact:hover, .contact.active {
+    .contact:hover, .contact.active, .user-item:hover {
       background: #2d2d2d;
     }
     
@@ -173,6 +235,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    
+    .user-status {
+      font-size: 12px;
+      color: #4caf50;
+      margin-top: 3px;
     }
     
     .main-chat {
@@ -190,6 +258,9 @@
       border-bottom: 1px solid #333;
       font-weight: bold;
       font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     
     .messages {
@@ -199,6 +270,7 @@
       display: flex;
       flex-direction: column;
       gap: 15px;
+      padding-bottom: 80px;
     }
     
     .message {
@@ -207,6 +279,12 @@
       border-radius: 18px;
       position: relative;
       line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .message.received {
@@ -221,6 +299,11 @@
       border-bottom-right-radius: 5px;
     }
     
+    .message-text {
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+    
     .message-time {
       font-size: 11px;
       color: #aaa;
@@ -228,15 +311,61 @@
       text-align: right;
     }
     
-    .message-input {
-      padding: 15px 20px;
+    .message-input-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 20px;
+      background: #1e1e1e;
       border-top: 1px solid #333;
+      z-index: 100;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .message-input {
       display: flex;
       gap: 10px;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .message-input input {
+      flex: 1;
+      padding: 12px 15px;
+      background: #2d2d2d;
     }
     
     .hidden {
       display: none;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
+    }
+    
+    .no-messages {
+      text-align: center;
+      padding: 40px 20px;
+      color: #aaa;
+      font-style: italic;
+    }
+    
+    .no-contacts {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
+      font-size: 14px;
+    }
+    
+    .yandex-browser-fix {
+      padding-bottom: 30px;
     }
     
     @media (max-width: 768px) {
@@ -248,14 +377,81 @@
         width: 100%;
         height: auto;
         margin-bottom: 15px;
+        max-height: 40vh;
       }
       
       .main-chat {
         margin-left: 0;
+        flex: 1;
+      }
+      
+      .message-input-container {
+        padding: 10px;
       }
       
       .contact-name {
         font-size: 14px;
+      }
+    }
+    
+    @media (max-height: 700px) {
+      .auth-screen {
+        height: auto;
+        padding: 40px 20px;
+        margin-top: 20px;
+      }
+      
+      .logo {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .sidebar {
+        width: 100%;
+        max-height: 35vh;
+        margin-bottom: 10px;
+        border-radius: 15px;
+      }
+      
+      .main-chat {
+        border-radius: 15px;
+      }
+      
+      .message {
+        max-width: 85%;
+      }
+      
+      .user-info {
+        padding: 10px;
+      }
+      
+      .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+      }
+      
+      .chat-header {
+        padding: 10px 15px;
+        font-size: 16px;
+      }
+      
+      .messages {
+        padding: 15px;
+        padding-bottom: 70px;
+      }
+      
+      .message-input input {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        min-width: 120px;
       }
     }
   </style>
@@ -273,6 +469,7 @@
       </div>
       <button class="btn" id="loginBtn">Войти</button>
       <button class="btn" id="registerBtn">Зарегистрироваться</button>
+      <button class="btn btn-delete" id="deleteAccountBtn">Удалить аккаунт</button>
     </div>
 
     <!-- Экран чата -->
@@ -285,30 +482,54 @@
             <div class="status">в сети</div>
           </div>
         </div>
-        <div class="contacts" id="contactsList">
-          <!-- Контакты будут добавлены динамически -->
+        
+        <div class="tabs">
+          <div class="tab active" data-tab="contacts">Контакты</div>
+          <div class="tab" data-tab="online">Онлайн</div>
         </div>
-        <button class="btn logout-btn" id="logoutBtn">Выйти</button>
+        
+        <div class="tab-content active" id="contactsTab">
+          <div class="contacts" id="contactsList">
+            <div class="loading">Загрузка контактов...</div>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="onlineTab">
+          <div class="online-users" id="onlineUsersList">
+            <div class="no-contacts">Нет пользователей онлайн</div>
+          </div>
+        </div>
+        
+        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn logout-btn" id="logoutBtn">Выйти</button>
+          <button class="btn delete-account-btn" id="deleteAccountBtn">Удалить аккаунт</button>
+        </div>
       </div>
       
       <div class="main-chat">
-        <div class="chat-header" id="chatHeader">Выберите собеседника</div>
-        <div class="messages" id="messagesContainer">
-          <!-- Сообщения будут добавлены динамически -->
+        <div class="chat-header" id="chatHeader">
+          <span>Выберите собеседника</span>
+          <span id="onlineStatus"></span>
         </div>
-        <div class="message-input">
-          <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
-          <button class="btn" id="sendBtn">Отправить</button>
+        <div class="messages" id="messagesContainer">
+          <div class="no-messages">Выберите контакт для начала общения</div>
         </div>
       </div>
+    </div>
+  </div>
+  
+  <div class="message-input-container">
+    <div class="message-input">
+      <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
+      <button class="btn" id="sendBtn">Отправить</button>
     </div>
   </div>
 
   <script type="module">
     // Импорт Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
     // Конфигурация Firebase
     const firebaseConfig = {
@@ -331,29 +552,45 @@
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
     const sendBtn = document.getElementById('sendBtn');
     const messageInput = document.getElementById('messageInput');
     const messagesContainer = document.getElementById('messagesContainer');
     const contactsList = document.getElementById('contactsList');
+    const onlineUsersList = document.getElementById('onlineUsersList');
     const chatHeader = document.getElementById('chatHeader');
+    const onlineStatus = document.getElementById('onlineStatus');
     const userAvatar = document.getElementById('userAvatar');
     const userName = document.getElementById('userName');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const contactsTab = document.getElementById('contactsTab');
+    const onlineTab = document.getElementById('onlineTab');
 
     let currentUser = null;
     let currentChatUser = null;
+    let messagesObserver = null;
+
+    // Проверить, Яндекс браузер
+    const isYandexBrowser = navigator.userAgent.toLowerCase().includes('yabrowser');
+    if (isYandexBrowser) {
+      document.body.classList.add('yandex-browser-fix');
+    }
 
     // Показать экран авторизации
     function showAuthScreen() {
       authScreen.style.display = 'flex';
       chatContainer.style.display = 'none';
+      document.querySelector('.message-input-container').style.display = 'none';
     }
 
     // Показать экран чата
     function showChatScreen() {
       chatContainer.style.display = 'flex';
       authScreen.style.display = 'none';
+      document.querySelector('.message-input-container').style.display = 'block';
     }
 
     // Войти в систему
@@ -392,16 +629,75 @@
           uid: user.uid,
           email: email,
           name: email.split('@')[0], // Используем часть email как имя
+          online: true,
+          lastSeen: serverTimestamp(),
           createdAt: serverTimestamp()
         });
+        
+        alert('Регистрация успешна! Теперь вы можете войти в систему.');
       } catch (error) {
         alert('Ошибка регистрации: ' + error.message);
+      }
+    }
+
+    // Удалить аккаунт
+    async function deleteAccount() {
+      if (!currentUser) return;
+      
+      const confirmDelete = confirm('Вы уверены, что хотите удалить свой аккаунт? Это действие невозможно отменить!');
+      if (!confirmDelete) return;
+      
+      try {
+        // Удалить все сообщения пользователя
+        const messagesQuery = query(
+          collection(db, 'messages'),
+          where('sender', '==', currentUser.uid)
+        );
+        
+        const messagesSnapshot = await getDocs(messagesQuery);
+        const deletePromises = [];
+        
+        messagesSnapshot.forEach(doc => {
+          deletePromises.push(deleteDoc(doc.ref));
+        });
+        
+        // Удалить пользователя из коллекции users
+        const userQuery = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
+        const userSnapshot = await getDocs(userQuery);
+        
+        if (!userSnapshot.empty) {
+          const userDoc = userSnapshot.docs[0];
+          await deleteDoc(userDoc.ref);
+        }
+        
+        // Удалить аккаунт аутентификации
+        await deleteUser(currentUser);
+        
+        alert('Ваш аккаунт успешно удален');
+        showAuthScreen();
+      } catch (error) {
+        console.error('Ошибка удаления аккаунта:', error);
+        alert('Ошибка удаления аккаунта: ' + error.message);
       }
     }
 
     // Выйти из системы
     async function logout() {
       try {
+        // Обновить статус пользователя на offline
+        if (currentUser) {
+          const userQuery = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
+          const userSnapshot = await getDocs(userQuery);
+          
+          if (!userSnapshot.empty) {
+            const userDoc = userSnapshot.docs[0];
+            await updateDoc(userDoc.ref, { 
+              online: false,
+              lastSeen: serverTimestamp()
+            });
+          }
+        }
+        
         await signOut(auth);
         showAuthScreen();
       } catch (error) {
@@ -413,8 +709,11 @@
     async function sendMessage() {
       if (!currentChatUser || !messageInput.value.trim()) return;
       
+      const messageText = messageInput.value.trim();
+      messageInput.value = '';
+      
       const message = {
-        text: messageInput.value.trim(),
+        text: messageText,
         sender: currentUser.uid,
         receiver: currentChatUser.uid,
         timestamp: serverTimestamp(),
@@ -423,19 +722,29 @@
       
       try {
         await addDoc(collection(db, 'messages'), message);
-        messageInput.value = '';
+        
+        // Прокрутить вниз после отправки
+        setTimeout(() => {
+          scrollToBottom();
+        }, 100);
       } catch (error) {
         console.error('Ошибка отправки:', error);
+        messageInput.value = messageText; // Вернуть сообщение при ошибке
       }
     }
 
     // Загрузить контакты
     function loadContacts() {
-      contactsList.innerHTML = '';
+      contactsList.innerHTML = '<div class="loading">Загрузка контактов...</div>';
       
       const q = query(collection(db, 'users'), where('uid', '!=', currentUser.uid));
       
       onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          contactsList.innerHTML = '<div class="no-contacts">Нет контактов для отображения</div>';
+          return;
+        }
+        
         contactsList.innerHTML = '';
         
         snapshot.forEach((doc) => {
@@ -445,6 +754,7 @@
           contactEl.innerHTML = `
             <div class="contact-name">${user.name}</div>
             <div class="contact-last-msg">Новое сообщение...</div>
+            ${user.online ? `<div class="user-status">в сети</div>` : ''}
           `;
           contactEl.dataset.uid = user.uid;
           contactEl.addEventListener('click', () => openChat(user));
@@ -453,13 +763,48 @@
       });
     }
 
+    // Загрузить онлайн пользователей
+    function loadOnlineUsers() {
+      onlineUsersList.innerHTML = '<div class="loading">Загрузка...</div>';
+      
+      const q = query(
+        collection(db, 'users'),
+        where('uid', '!=', currentUser.uid),
+        where('online', '==', true)
+      );
+      
+      onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          onlineUsersList.innerHTML = '<div class="no-contacts">Нет пользователей онлайн</div>';
+          return;
+        }
+        
+        onlineUsersList.innerHTML = '';
+        
+        snapshot.forEach((doc) => {
+          const user = doc.data();
+          const userEl = document.createElement('div');
+          userEl.className = 'user-item';
+          userEl.innerHTML = `
+            <div class="contact-name">${user.name}</div>
+            <div class="user-status">в сети</div>
+          `;
+          userEl.dataset.uid = user.uid;
+          userEl.addEventListener('click', () => openChat(user));
+          onlineUsersList.appendChild(userEl);
+        });
+      });
+    }
+
     // Открыть чат с пользователем
     function openChat(user) {
       currentChatUser = user;
-      chatHeader.textContent = user.name;
+      chatHeader.querySelector('span:first-child').textContent = user.name;
+      onlineStatus.textContent = user.online ? 'в сети' : 'не в сети';
+      onlineStatus.style.color = user.online ? '#4caf50' : '#aaa';
       
       // Убрать активный класс у всех контактов
-      document.querySelectorAll('.contact').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.contact, .user-item').forEach(c => c.classList.remove('active'));
       event.currentTarget.classList.add('active');
       
       loadMessages();
@@ -469,7 +814,12 @@
     function loadMessages() {
       if (!currentChatUser) return;
       
-      messagesContainer.innerHTML = '';
+      // Отписаться от предыдущего наблюдателя, если есть
+      if (messagesObserver) {
+        messagesObserver();
+      }
+      
+      messagesContainer.innerHTML = '<div class="loading">Загрузка сообщений...</div>';
       
       const q = query(
         collection(db, 'messages'),
@@ -478,8 +828,13 @@
         orderBy('timestamp', 'asc')
       );
       
-      onSnapshot(q, (snapshot) => {
+      messagesObserver = onSnapshot(q, (snapshot) => {
         messagesContainer.innerHTML = '';
+        
+        if (snapshot.empty) {
+          messagesContainer.innerHTML = '<div class="no-messages">Нет сообщений. Напишите первое сообщение!</div>';
+          return;
+        }
         
         snapshot.forEach((doc) => {
           const msg = doc.data();
@@ -487,8 +842,16 @@
         });
         
         // Прокрутить вниз
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        scrollToBottom();
+      }, (error) => {
+        console.error('Ошибка загрузки сообщений:', error);
+        messagesContainer.innerHTML = `<div class="no-messages">Ошибка загрузки сообщений: ${error.message}</div>`;
       });
+    }
+
+    // Прокрутить вниз к последним сообщениям
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     // Добавить сообщение в интерфейс
@@ -496,25 +859,69 @@
       const messageEl = document.createElement('div');
       messageEl.className = `message ${isSent ? 'sent' : 'received'}`;
       
-      const date = message.timestamp?.toDate();
-      const timeStr = date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+      let timeStr = '';
+      if (message.timestamp) {
+        const date = message.timestamp?.toDate ? message.timestamp.toDate() : message.timestamp;
+        timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
       
       messageEl.innerHTML = `
-        <div class="message-text">${message.text}</div>
+        <div class="message-text">${escapeHtml(message.text)}</div>
         <div class="message-time">${timeStr}</div>
       `;
       
       messagesContainer.appendChild(messageEl);
     }
 
+    // Экранирование HTML для безопасности
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "<")
+        .replace(/>/g, ">")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Переключение вкладок
+    function setupTabs() {
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.dataset.tab;
+          
+          // Убрать активный класс со всех вкладок
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          // Добавить активный класс к выбранной вкладке
+          tab.classList.add('active');
+          
+          // Показать соответствующий контент
+          if (tabName === 'contacts') {
+            contactsTab.classList.add('active');
+            loadContacts();
+          } else if (tabName === 'online') {
+            onlineTab.classList.add('active');
+            loadOnlineUsers();
+          }
+        });
+      });
+    }
+
     // Обработчики событий
     loginBtn.addEventListener('click', login);
     registerBtn.addEventListener('click', register);
     logoutBtn.addEventListener('click', logout);
+    deleteAccountBtn.addEventListener('click', deleteAccount);
     sendBtn.addEventListener('click', sendMessage);
     
     messageInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage();
+    });
+    
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
     });
 
     // Слушатель состояния аутентификации
@@ -531,7 +938,46 @@
           userName.textContent = userData.name;
           userAvatar.textContent = userData.name.charAt(0).toUpperCase();
           
+          // Обновить статус на online
+          const userDoc = querySnapshot.docs[0].ref;
+          await updateDoc(userDoc, { 
+            online: true,
+            lastSeen: serverTimestamp()
+          });
+          
           loadContacts();
+          loadOnlineUsers();
+          showChatScreen();
+          
+          // Настроить автообновление статуса online
+          setInterval(async () => {
+            try {
+              await updateDoc(userDoc, { 
+                lastSeen: serverTimestamp()
+              });
+            } catch (error) {
+              console.error('Ошибка обновления статуса:', error);
+            }
+          }, 60000);
+        } else {
+          // Если пользователь не найден в базе, создаем запись
+          await addDoc(collection(db, 'users'), {
+            uid: user.uid,
+            email: user.email,
+            name: user.email.split('@')[0],
+            online: true,
+            lastSeen: serverTimestamp(),
+            createdAt: serverTimestamp()
+          });
+          
+          // Обновить данные после создания
+          const newQuerySnapshot = await getDocs(q);
+          const newUserData = newQuerySnapshot.docs[0].data();
+          userName.textContent = newUserData.name;
+          userAvatar.textContent = newUserData.name.charAt(0).toUpperCase();
+          
+          loadContacts();
+          loadOnlineUsers();
           showChatScreen();
         }
       } else {
@@ -539,8 +985,36 @@
       }
     });
 
+    // Определение закрытия вкладки/браузера для обновления статуса
+    window.addEventListener('beforeunload', async () => {
+      if (currentUser) {
+        const userQuery = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
+        const userSnapshot = await getDocs(userQuery);
+        
+        if (!userSnapshot.empty) {
+          const userDoc = userSnapshot.docs[0].ref;
+          await updateDoc(userDoc, { 
+            online: false,
+            lastSeen: serverTimestamp()
+          });
+        }
+      }
+    });
+
+    // Настроить вкладки при загрузке
+    setupTabs();
+
     // Первоначально показать экран авторизации
     showAuthScreen();
+    
+    // Попытка восстановить сессию при перезагрузке
+    setTimeout(() => {
+      const user = auth.currentUser;
+      if (user) {
+        currentUser = user;
+        // Статус уже будет обновлен при onAuthStateChanged
+      }
+    }, 500);
   </script>
 </body>
 </html>
