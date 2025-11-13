@@ -131,7 +131,6 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      overflow: hidden;
     }
     
     .user-info {
@@ -155,20 +154,11 @@
       flex-shrink: 0;
     }
     
-    .logout-btn {
-      background: #ff5252;
-      padding: 8px 15px;
-      border-radius: 20px;
-      margin-top: 10px;
-      width: 100%;
-    }
-    
-    .delete-account-btn {
-      background: #555;
-      padding: 8px 15px;
-      border-radius: 20px;
-      margin-top: 8px;
-      width: 100%;
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+      margin-bottom: 15px;
     }
     
     .tabs {
@@ -201,12 +191,13 @@
     
     .tab-content.active {
       display: block;
+      height: 100%;
     }
     
     .contacts, .online-users {
-      flex: 1;
+      height: 100%;
       overflow-y: auto;
-      margin-top: 10px;
+      margin-top: 5px;
       padding-right: 5px;
     }
     
@@ -241,6 +232,14 @@
       font-size: 12px;
       color: #4caf50;
       margin-top: 3px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid #333;
     }
     
     .main-chat {
@@ -488,19 +487,21 @@
           <div class="tab" data-tab="online">Онлайн</div>
         </div>
         
-        <div class="tab-content active" id="contactsTab">
-          <div class="contacts" id="contactsList">
-            <div class="loading">Загрузка контактов...</div>
+        <div class="content-area">
+          <div class="tab-content active" id="contactsTab">
+            <div class="contacts" id="contactsList">
+              <div class="loading">Загрузка контактов...</div>
+            </div>
+          </div>
+          
+          <div class="tab-content" id="onlineTab">
+            <div class="online-users" id="onlineUsersList">
+              <div class="no-contacts">Нет пользователей онлайн</div>
+            </div>
           </div>
         </div>
         
-        <div class="tab-content" id="onlineTab">
-          <div class="online-users" id="onlineUsersList">
-            <div class="no-contacts">Нет пользователей онлайн</div>
-          </div>
-        </div>
-        
-        <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+        <div class="action-buttons">
           <button class="btn logout-btn" id="logoutBtn">Выйти</button>
           <button class="btn delete-account-btn" id="deleteAccountBtn">Удалить аккаунт</button>
         </div>
@@ -899,9 +900,11 @@
           // Показать соответствующий контент
           if (tabName === 'contacts') {
             contactsTab.classList.add('active');
+            onlineTab.classList.remove('active');
             loadContacts();
           } else if (tabName === 'online') {
             onlineTab.classList.add('active');
+            contactsTab.classList.remove('active');
             loadOnlineUsers();
           }
         });
